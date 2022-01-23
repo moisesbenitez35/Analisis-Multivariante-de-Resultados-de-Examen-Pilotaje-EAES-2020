@@ -1,0 +1,36 @@
+library(readxl)
+library(dplyr)
+library(psych)
+library(ggplot2)
+
+campos <- read_excel("C:/Users/moise/OneDrive/Escritorio/ESPOL/Estadística Multivariante/Proyecto/Campos_adicionales_espol.xlsx")
+
+c<- ggplot(pilotaje,aes(x=Campo.de.conocimiento,y=Respuesta))
+c+stat_bin_2d()+
+  labs(title = "Numero de respuestas correctas e incorrectas",x="Campo de conocimiento")
+
+Asignaturas<-c("Matematica","Literatura","Ciencias Naturales","Ciencias Sociales")
+b<-data.frame(Asignaturas,apply(campos[,18:21], 2,sum))
+names(b)[2]<-c("Aciertos")
+
+bg <- ggplot(b,aes(x=Asignaturas,y=Aciertos,fill=Asignaturas))
+bg+geom_col()+theme_minimal()+theme(legend.position = 'none')+
+  labs(title = "Aciertos por asignatura")
+
+df2<-data.frame(campos[,10],campos[,12],campos[,22])
+names(df2)[1]<-"Nivel_de_Padre"
+names(df2)[2]<-"Nivel_de_Madre"
+names(df2)[3]<-"Aciertos"
+niv<-ggplot(df2,aes(x=Nivel_de_Padre))
+niv+geom_raster(aes(y=Nivel_de_Madre,fill=Aciertos))+theme_minimal()+
+  theme(axis.text.y = element_text(size = 7),axis.text.x = element_text(angle = 90,size = 7))+
+  labs(title = "Nivel de Estudio vs. Aciertos",x="Nivel de Padre",y="Nivel de Madre")
+
+niv+geom_boxplot(aes(group=Nivel_de_Padre,y=Aciertos))+coord_flip()+theme_minimal()
+
+df3<-data.frame(campos[,17],campos[,22])
+colnames(df3)<-c("Horario","Aciertos")
+
+hor<-ggplot(df3,aes(x=Horario,y=Aciertos,group=Horario))
+hor+geom_boxplot()+theme_minimal()
+
